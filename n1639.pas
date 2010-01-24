@@ -56,6 +56,7 @@ end;
 procedure write_to_file(var f:fstud; var g:group);
 var i:integer;
 begin
+   assign(f, 'group118.records');
    rewrite(f);
    for i:=1 to 10 do begin
       write(f, g[i]);
@@ -65,4 +66,5 @@ end;
 begin
    new_group(group118);
    write_to_file(f, group118);
+   writeln('Data writing to file "group118.records".');
 end.
