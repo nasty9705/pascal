@@ -69,53 +69,88 @@ begin
    end;
 end;
 
-procedure read_to_list(var f:fstud; var l:list);
-var cur_item:stud;
-begin
-   assign(f, 'group118.records');
-   reset(f);
-   while not eof(f) then begin
-      read(f, cur_item)
-      put_to_list(l, cur_item);
-   end;
-end
-
-procedure put_to_list(var l:list; cur_item:stud);
-var tmp, tmp_pred,new_item:list;
-    comp:integer;
-begin
-   if (l=nil) then begin
-      new(l);
-      l.elem=cur_item;
-   end else begin
-      tmp:=l;
-      while (tmp^.elem<>nil && comp>0) do
-      begin
-        tmp_pred:=tmp;
-        tmp:=tmp^.next;
-        comp:=compare(tmp^.elem, cur_item);
-      end;
-      new(new_item);
-      new_item^.elem:=stud;
-      new_item^.next:=tmp;
-      tmp_pred^.next:=new_item;
-      end;
-end;
-
 function compare(a, b:stud):integer;
 begin
-   if(a=nil && b=nil) then
+write('Called compare [',a.fn.fam,'] vs [',b.fn.fam,']: ');
+{   if(a=nil && b=nil) then
      compare:=0
    else if (a=nil) then
            compare:=1
         else if (b=nil) then
                 compare:=-1
-             else if (sort_by = 0) then
-                     if (a.fam=b.fam) then
+             else }if (sort_by = 0) then
+                     if (a.fn.fam=b.fn.fam) then
                         compare:=0
-                     else if (a.fam < b.fam) then
+                     else if (a.fn.fam < b.fn.fam) then
                           compare:= -1
                           else compare:=1;
+writeln(compare);
+end;
+
+procedure put_to_list(var l:list; cur_item:stud);
+var tmp, tmp_pred,new_item:list;
+    comp:integer;
+begin
+   writeln('Called put_to_list');
+   if (l=nil) then begin
+      writeln('Branch one begin');
+      new(l);
+      l^.elem:=cur_item;
+      writeln('Branch one end');
+   end else begin
+      writeln('Branch two begin');
+      tmp:=l;
+      comp:=1;
+      while ((tmp<>nil) AND (comp>0)) do
+      begin
+        tmp_pred:=tmp;
+        tmp:=tmp^.next;
+        comp:=compare(tmp_pred^.elem, cur_item);
+      end;
+      writeln('Branch two middle');
+      new(new_item);
+      new_item^.elem:=cur_item;
+      new_item^.next:=tmp;
+      tmp_pred^.next:=new_item;
+      writeln('Branch two end');
+      end;
+end;
+
+procedure read_to_list(var f:fstud; var l:list);
+var cur_item:stud;
+begin
+   writeln('Called read_to_list');
+   assign(f, 'group118.records');
+   reset(f);
+   while not eof(f) do begin
+      read(f, cur_item);
+      put_to_list(l, cur_item);
+   end;
+end;
+
+procedure read_to_screen;
+var l:list;
+    f:fstud;
+    el:stud;
+    i:integer;
+begin
+   writeln('Called read_to_screen');
+   new(l);
+   {new(f);}
+   read_to_list(f, l);
+   while (l<>nil) do
+   begin
+      el:=l^.elem;
+      write(el.fn.fam,' ');
+      write(el.fn.name,' ');
+      if (el.sex=M) then
+         write('M ')
+      else write('W ');
+      for i:= 1 to 5 do
+         write(el.marks[i]);
+      writeln;
+      l:=l^.next;
+   end
 end;
 
 begin
@@ -123,5 +158,6 @@ begin
    write_to_file(f, group118);
    writeln('Data writing to file "group118.records".');
 
-   sort_by = 0;
+   sort_by := 0;
+   read_to_screen;
 end.
