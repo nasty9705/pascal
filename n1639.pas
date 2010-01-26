@@ -13,8 +13,14 @@ type str  = packed array [1..10] of char;
      group = array [1..10] of stud;
      fstud = file of stud;
 
+     list = ^item;
+     item = record
+              elem:stud;
+              next:list;
+            end;
 var group118:group;
     f:fstud;
+    sort_by:integer;
 
 procedure new_stud(var s:stud; fam, name:str; sex:sex_type; m1,m2,m3,m4,m5:marks_type);
 begin
@@ -63,8 +69,59 @@ begin
    end;
 end;
 
+procedure read_to_list(var f:fstud; var l:list);
+var cur_item:stud;
+begin
+   assign(f, 'group118.records');
+   reset(f);
+   while not eof(f) then begin
+      read(f, cur_item)
+      put_to_list(l, cur_item);
+   end;
+end
+
+procedure put_to_list(var l:list; cur_item:stud);
+var tmp, tmp_pred,new_item:list;
+    comp:integer;
+begin
+   if (l=nil) then begin
+      new(l);
+      l.elem=cur_item;
+   end else begin
+      tmp:=l;
+      while (tmp^.elem<>nil && comp>0) do
+      begin
+        tmp_pred:=tmp;
+        tmp:=tmp^.next;
+        comp:=compare(tmp^.elem, cur_item);
+      end;
+      new(new_item);
+      new_item^.elem:=stud;
+      new_item^.next:=tmp;
+      tmp_pred^.next:=new_item;
+      end;
+end;
+
+function compare(a, b:stud):integer;
+begin
+   if(a=nil && b=nil) then
+     compare:=0
+   else if (a=nil) then
+           compare:=1
+        else if (b=nil) then
+                compare:=-1
+             else if (sort_by = 0) then
+                     if (a.fam=b.fam) then
+                        compare:=0
+                     else if (a.fam < b.fam) then
+                          compare:= -1
+                          else compare:=1;
+end;
+
 begin
    new_group(group118);
    write_to_file(f, group118);
    writeln('Data writing to file "group118.records".');
+
+   sort_by = 0;
 end.
