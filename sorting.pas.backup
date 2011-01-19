@@ -1,0 +1,247 @@
+program sorting;
+const start_year=1930; {1930-2029}
+      max_index_of_sequence=99;
+type date = record d,m,y:integer end;
+     sequence = array [0..max_index_of_sequence] of date;
+     dstring = array [0..7] of char; { 'xx.xx.xx' }
+var compares, moves:integer;
+    seq:sequence;
+
+procedure date2str(var str:dstring; date1:date);
+begin
+  with date1 do begin
+    str[0]:=chr(ord('0')+(d div 10));
+    str[1]:=chr(ord('0')+(d mod 10));
+    str[2]:='.';
+    str[3]:=chr(ord('0')+(m div 10));
+    str[4]:=chr(ord('0')+(m mod 10));
+    str[5]:='.';
+    str[6]:=chr(ord('0')+(y div 10));
+    str[7]:=chr(ord('0')+(y mod 10));
+  end;
+end;
+
+function date2int(var date1:date):integer;
+var year, month, day:integer;
+begin
+  with date1 do begin
+{ Преобразуем год в величину от -50 до 49 так,
+  чтобы большему году соответствовала большая
+  величина }
+  year:=y-(start_year mod 100);
+  if (year<0) then
+     year:=year+100;
+  year:=year-50;
+
+{ Месяц: от -6 до 5 }
+  month:=m-7;
+
+{ День: от -15 до 15 }
+  day:=d-16;
+
+  date2int:=(year*372)+(month*31)+day; {31*12=372}
+{ TODO: подумать, не надо ли умножить month*32, а year*373}
+end;
+end;
+
+{ Возвращает:
+    отрицательное число, если date1<date2
+    нуль, если date1=date2
+    положительное число, если date1>date2 }
+function compare(var date1,date2:date):integer;
+begin
+  compare:=date2int(date1)-date2int(date2);
+end;
+
+{ Возвращает:
+    True, если date1<date2
+    False, если date1>=date2 }
+function bcompare(var date1,date2:date):boolean;
+var str1,str2:dstring;
+begin
+  compares:=compares+1;
+  bcompare:=(compare(date1,date2)<0);
+date2str(str1, date1);
+date2str(str2, date2);
+writeln(str1,'<',str2,': ',bcompare);
+end;
+
+procedure warning;
+begin
+  writeln('Галактеко опасносте!!! Пыщь-пыщь!');
+end;
+
+{ Отсортировать последовательность seq размера size
+  по неубыванию
+  с помощью сортировки простым выбором }
+procedure psort(var seq:sequence; size:integer);
+var sorted,index_min,i:integer;
+    tmp:date;
+str1:dstring;
+begin
+{ Проверка на вшивость}
+if ((size-1)>max_index_of_sequence) then
+  warning
+else begin
+{ Обнуляем счётчики сравнений и перестановок }
+  compares:=0; moves:=0;
+{ Обнуляем счётчик количества упорядоченных 
+  (в начале массива) элементов }
+  sorted:=0;
+
+  repeat
+  { Находим минимальный среди неупорядоченных элементов }
+    index_min:=sorted;
+    for i:=(sorted+1) to (size-1) do
+      if bcompare(seq[i], seq[index_min]) then
+        index_min:=i;
+date2str(str1, seq[index_min]); writeln('min',str1);
+  { Меняем минимальный с первым неотсортированным }
+    tmp:=seq[sorted];
+    seq[sorted]:=seq[index_min];
+    seq[index_min]:=tmp;
+    moves:=moves+1;
+  { Всё возвращается на круги своя }
+    sorted:=sorted+1;
+  until (sorted>=(size-1));
+end;
+end;
+
+{ Отсортировать последовательность seq размера size
+  по неубыванию
+  рекурсивным методом быстрой сортировки }
+procedure qsort(var seq:sequence; size:integer);
+
+procedure qsort_step(var seq:sequence; start_index,end_index:integer);
+
+{var current_index, coof, left_to_move, right_to_move, i, to_move :integer;
+    flag:boolean;
+    tmp:date;
+}
+begin
+l:=
+
+{
+  if (end_index-start_index)>3 then begin
+    current_index:=start_index+((end_index-start_index) div 2);
+    flag:=false;
+
+    while (not flag) do begin
+    { Находим левый и правый элементы, которые нужно "перекинуть" за current_index }
+      left_to_move:=-1;
+      for i:=start_index to (current_index-1) do
+        if compare(seq[start_index],seq[current_index])>0 then
+          left_to_move:=start_index;
+      right_to_move:=-1;
+      for i:=(current_index+1) to start_index do
+        if compare(seq[start_index],seq[current_index])<0 then
+          right_to_move:=start_index;
+    { Проверка на то, есть ли слева и справа элементы, которые надо переставлять }
+      coof:=0;
+      if left_to_move>(-1) then begin
+        to_move:=left_to_move;
+        coof:=coof-1;
+      end;
+      if right_to_move>(-1) then begin
+        to_move:=right_to_move;
+        coof:=coof+2;
+      end;
+  { Action }
+      case coof of
+        1: begin {++}
+             tmp:=seq[left_to_move];
+             seq[left_to_move]:=seq[right_to_move];
+             seq[right_to_move]:=tmp;
+           end;
+        0: begin {--}
+           flag:=true
+           end;
+       -1,2: begin {+-}
+             tmp:=seq[current_index];
+             seq[current_index]:=seq[to_move];
+             coof:=(coof div abs(coof));
+             seq[to_move]:=seq[current_index+coof];
+             seq[current_index+coof]:=tmp;
+           end;
+      end;
+    end;
+  end else begin
+{ База индукции }
+  
+  end;
+}
+end;
+
+begin
+{ Обнуляем счётчики сравнений и перестановок }
+  compares:=0; moves:=0;
+  qsort_step(seq,0,size-1);
+end;
+
+{ Возвращает количество дней в данном месяце данного года }
+function days_in_month(year, month:integer):integer;
+begin
+{ TODO }
+{if is_leap_year(year, month)}
+days_in_month:=31;
+end;
+
+procedure new_date(var date1:date; year, month, day:integer);
+begin
+  with date1 do begin
+    y:=year;
+    m:=month;
+    d:=day;
+  end;
+end;
+
+{ Сгенерировать последовательность дат из n элементов в
+  зависимости от значения f такую, что:
+0 - элементы упорядочены по неубыванию;
+1 - элементы упорядочены по невозрастанию;
+2 - элементы с нечетными индексами упорядочены по неубыванию, а с
+    четными индексами - по невозрастанию;
+3 - случайная расстановка элементов; }
+procedure genseq(var seq:sequence; n,f:integer);
+var i,year,month,day:integer;
+begin
+  if (f>3) OR (f<0) then
+    warning
+  else case f of
+      0: ;
+      1: ;
+      2: ;
+      3: for i:=0 to (n-1) do begin
+           year:=trunc(random(100));
+           month:=1+trunc(random(12));
+           day:=1+trunc(random(days_in_month(year, month)));
+           new_date(seq[i],year,month,day);
+         end;
+      end;
+end;
+
+{ Вывести на экран последовательность seq из n элементов }
+procedure showseq(var seq:sequence; n:integer);
+var i:integer;
+    str:dstring;
+begin
+  writeln('------------');
+  for i:=0 to (n-1) do begin
+    if ((n-1)>9) AND (i<10) then
+      write(' ');
+    write(i,': ');
+
+    date2str(str, seq[i]);
+    writeln(str);
+  end;
+end;
+
+begin
+  randomize;
+  genseq(seq,99,3);
+  showseq(seq, 99);
+
+  psort(seq,99);
+  writeln('compares: ',compares,'; moves: ',moves,';');
+  showseq(seq,99);
+end.
