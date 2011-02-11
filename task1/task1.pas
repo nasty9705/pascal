@@ -1,10 +1,11 @@
-{Turenko Alexander, Project 1, 7.4.3}
+{Turenko Alexander, Project 1, 7.4.3 and 7.1.3}
 program p743(INPUT, OUTPUT);
-const eps=0.001;
-      p=1/15;
+const eps = 0.001;
+      p = 1/15;
 type RF = function (x:real):real;
 var eps1,eps2,x1,x2,x3,a,b,I1,I2,I3:real;
-    debug_level:integer;
+    test,debug:boolean;
+    root_method:integer;
     checked:packed array [1..10] of char;
 
 function f1(x:real):real; begin f1:=ln(x) end;
@@ -33,27 +34,27 @@ function f_test6(x:real):real; begin f_test6:=5*exp(4*ln(x))-3*x*x end;
 {Difficult between function f1 and f2 at some dot a}
 function Fd(f1,f2:RF; a:real):real;
 begin
-  if((debug_level mod 2)=1) then writeln('Called Fd(',a:2:5,'); f1(a): ',f1(a):2:5,' f2(a): ',f2(a):2:5,'. Return ',(f1(a)-f2(a)):2:5);
+  if (debug) then writeln('DEBUG: Called Fd(',a:2:5,'); f1(a): ',f1(a):2:5,' f2(a): ',f2(a):2:5,'. Return ',(f1(a)-f2(a)):2:5);
   Fd:=f1(a)-f2(a);
 end;
 
-procedure root(f,g,f1,g1:RF; a,b,eps:real; var x:real);
+procedure root4(f,g,f1,g1:RF; a,b,eps:real; var x:real);
 var c1,c2,tmp1,tmp2,eps_current:real;
 begin
-  if((debug_level mod 2)=1) then writeln('Called root(',a:2:5,'; ',b:2:5,');');
+  if (debug) then writeln('DEBUG: Called root4(',a:2:5,'; ',b:2:5,');');
   {Найдём точку пересечения с осью абсцисс прямой, проходящей через точки (a,Fd(a) и (b, Fd(b).}
   tmp1 := (a*Fd(f,g,b)-b*Fd(f,g,a))/(Fd(f,g,b) - Fd(f,g,a));
-  if((debug_level mod 2)=1) then writeln('tmp1: ',tmp1:2:5);
+  if (debug) then writeln('DEBUG: tmp1: ',tmp1:2:5);
   if ((Fd(f,g,(a+b)/2)>(Fd(f,g,a)+Fd(f,g,b))/2)=(Fd(f,g,a)<0)) then begin
     {Первая и вторая производные имеют разные знаки.}
-    if((debug_level mod 2)=1) then writeln('#2');
+    if (debug) then writeln('DEBUG: #2');
     c2:=tmp1;
     tmp2:=a;
     {Найдём точку пересечения касательной с осью абсцисс.}
     c1:=tmp2-Fd(f,g,tmp2)/Fd(f1,g1,tmp2);
   end else begin
     {Первая и вторая производные имеют одинаковые знаки.}
-    if((debug_level mod 2)=1) then writeln('#1');
+    if (debug) then writeln('DEBUG: #1');
     c1:=tmp1;
     tmp2:=b;
     {Найдём точку пересечения касательной с осью абсцисс.}
@@ -63,14 +64,76 @@ begin
   eps_current:=c2-c1;
   if (eps_current<=eps) then
     x:=c1
-  else root(f,g,f1,g1,c1,c2,eps,x);
+  else root4(f,g,f1,g1,c1,c2,eps,x);
+end;
+
+procedure root1(f,g,f1,g1:RF; a,b,eps:real; var x:real);
+var fa,fb,middle,f_middle,eps_current:real;
+    fa_z,fb_z,fm_z:boolean;
+begin
+  if (debug) then writeln('DEBUG: Called root1(',a:2:5,'; ',b:2:5,');');
+
+  fa := Fd(f,g,a);
+  fb := Fd(f,g,b);
+
+  if (fa = 0) then begin
+    x := a;
+    exit;
+  end else if (fb = 0) then begin
+    x := b;
+    exit;
+  end;
+
+  fa_z := (fa > 0);
+  fb_z := (fb > 0);
+
+  repeat
+    middle := (a + b) / 2;
+    f_middle := Fd(f,g,middle);
+
+    if (f_middle = 0) then begin
+      x := middle;
+      exit;
+    end;
+
+    fm_z := (f_middle > 0);
+   
+    if (fa_z <> fm_z) then begin
+      if (debug) then writeln('DEBUG: middle<--b');
+      b := middle;
+      fb := f_middle;
+      fb_z := fm_z;
+    end else if (fm_z <> fb_z) then begin
+      if (debug) then writeln('DEBUG: a-->middle');
+      a := middle;
+      fa := f_middle;
+      fa_z := fm_z;
+    end else begin
+      writeln('root1: solve not found.');
+      exit;
+    end;
+
+    eps_current := b - a;
+  until (eps_current <= eps);
+
+  x := a;
+end;
+
+procedure root(f,g,f1,g1:RF; a,b,eps:real; var x:real);
+begin
+  if (root_method = 1) then
+    root1(f,g,f1,g1,a,b,eps,x)
+  else if (root_method = 4) then
+    root4(f,g,f1,g1,a,b,eps,x)
+  else
+    writeln('Cannot find root method',root_method);
 end;
 
 function integral(f:RF; a,b,eps:real):real;
 var h,sum0,sum1,sum2,Iln,Il2n,x1,x2,tmp:real;
     n:integer;
 begin
-  if((debug_level mod 2)=1) then writeln('Called integral(',a:2:5,'; ',b:2:5,');');
+  if (debug) then writeln('DEBUG: Called integral(',a:2:5,'; ',b:2:5,');');
   if(b<a) then begin
     tmp:=a;
     a:=b;
@@ -100,7 +163,7 @@ begin
     end;
 
     Iln := (h/3)*(sum0+(sum1*(((n+1) mod 2)+1))+(sum2*((n mod 2)+1)));
-    if((debug_level mod 2)=1) then writeln('Iln: ',Iln:2:5);
+    if (debug) then writeln('DEBUG: Iln: ',Iln:2:5);
 
     n:=n+1;
   until (abs(Il2n-Iln)<p*eps);
@@ -108,20 +171,65 @@ begin
   integral:=Il2n;
 end;
 
+function init:boolean;
+var tmp:integer;
 begin
-  writeln('This program calculate area via integrals.');
-  writeln('Choose level of verbosity output to "normal", "debug", "TEST" or "TEST_With_Debug" (0-3):');
-  write('> '); read(debug_level);
-  if (debug_level<0) then begin
-    debug_level:=0;
-    writeln('Verbosity level out of range! Changed to ',debug_level,'.');
-  end else if (debug_level>3) then begin
-    debug_level:=3;
-    writeln('Verbosity level out of range! Changed to ',debug_level,'.');
+  writeln('This is program for calculating area via integrals.');
+  writeln('Run in test mode? Enter 0 to answer "NO" or 1 to "YES".');
+  write('> '); read(tmp);
+
+  if (tmp < 0) then begin
+    tmp := 0;
+    writeln('Mode value out of range! Changed to ',tmp,'.');
+  end else if (tmp > 1) then begin
+    tmp := 1;
+    writeln('Mode value out of range! Changed to ',tmp,'.');
   end;
 
-  eps1:=eps;eps2:=eps; if((debug_level mod 2)=1) then writeln('Choosed eps1=eps2=eps.');
-  if(debug_level<2) then begin
+  test := (tmp = 1);
+
+  writeln('Write debug information? Enter 0 to answer "NO" or 1 to "YES".');
+  write('> '); read(tmp);
+
+  if (tmp < 0) then begin
+    tmp := 0;
+    writeln('Debug value out of range! Changed to ',tmp,'.');
+  end else if (tmp > 1) then begin
+    tmp := 1;
+    writeln('Debug value out of range! Changed to ',tmp,'.');
+  end;
+
+  debug := (tmp = 1);
+
+  writeln('Please, select method for find point of cross of functions:');
+  writeln('1. Bisection method.');
+  writeln('4. Secant and tangent method.');
+  write('> '); read(tmp);
+
+  if ((tmp = 1) OR (tmp = 4)) then begin
+    root_method := tmp;
+  end else begin
+    writeln('Sorry, this method is not implemented.');
+    writeln('Exiting...');
+    init := False; { Not initialized }
+    exit;
+  end;
+
+  eps1 := eps;
+  eps2 := eps;
+
+  if (debug) then writeln('DEBUG: eps1 = eps2 = eps.');
+
+  { Succeful initialized }
+  init := True;
+end;
+
+begin
+  if (NOT init) then
+    exit;
+  writeln;
+
+  if (NOT test) then begin
     a:=2.1; b:=7;
     root(@f1,@f2,@f1p,@f2p,a,b,eps1,x1);
     root(@f2,@f3,@f2p,@f3p,a,b,eps1,x2);
@@ -140,56 +248,61 @@ begin
     writeln('Area: ', (I2+I3-I1):2:5);
   end else begin
     a:=0.5; b:=10;
-    writeln('Testing find point of cross of function 1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    write('Expected: 0.814333... ');
+    writeln('Testing find point of cross of functions 1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
     root(@f_test,@f_test1,@fp_test,@fp_test1,a,b,eps1,x1);
-    writeln('Got: ',x1:2:5);
+    writeln('Got:                       ',x1:2:5);
+    writeln('Expected:                  0.814333');
     if(abs(0.814333-x1)<eps1) then
       checked:='[OK]'
     else checked:='[FAILED]';
     writeln('Checking with eps ',eps1:2:5,': ',checked);
+    writeln;
 
-    writeln('Testing find point of cross of function -1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    write('Expected: 1... ');
+    writeln('Testing find point of cross of functions -1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
     root(@f_test,@f_test2,@fp_test,@fp_test2,a,b,eps1,x1);
-    writeln('Got: ',x1:2:5);
+    writeln('Got:                       ',x1:2:5);
+    writeln('Expected:                  1');
     if(abs(1-x1)<eps1) then
       checked:='[OK]'
     else checked:='[FAILED]';
     writeln('Checking with eps ',eps1:2:5,': ',checked);
+    writeln;
 
-    writeln('Testing find point of cross of function 1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    write('Expected: 1... ');
+    writeln('Testing find point of cross of functions 1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
     root(@f_test,@f_test3,@fp_test,@fp_test3,a,b,eps1,x1);
-    writeln('Got: ',x1:2:5);
+    writeln('Got:                       ',x1:2:5);
+    writeln('Expected:                  1');
     if(abs(1-x1)<eps1) then
       checked:='[OK]'
     else checked:='[FAILED]';
     writeln('Checking with eps ',eps1:2:5,': ',checked);
+    writeln;
 
-    writeln('Testing find point of cross of function -1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    write('Expected: 1.15545... ');
+    writeln('Testing find point of cross of functions -1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
     root(@f_test,@f_test4,@fp_test,@fp_test4,a,b,eps1,x1);
-    writeln('Got: ',x1:2:5);
+    writeln('Got:                       ',x1:2:5);
+    writeln('Expected:                  1.15545');
     if(abs(1.15545-x1)<eps1) then
       checked:='[OK]'
     else checked:='[FAILED]';
     writeln('Checking with eps ',eps1:2:5,': ',checked);
+    writeln;
 
     a:=1; b:=2;
-    writeln('Testing calculate integral function 7*x^6+14 on [',a:2:5,'; ',b:2:5,']');
-    write('Expected: 141... ');
+    writeln('Testing calculate integral functions 7*x^6+14 on [',a:2:5,'; ',b:2:5,']');
     I1:=integral(@f_test5,a,b,eps2);
-    writeln('Got: ',I1:2:5);
+    writeln('Got:                       ',I1:2:5);
+    writeln('Expected:                  141');
     if(abs(141-I1)<eps2) then
       checked:='[OK]'
     else checked:='[FAILED]';
     writeln('Checking with eps ',eps1:2:5,': ',checked);
+    writeln;
 
-    writeln('Testing calculate integral function 5*x^4-3*x^2 on [',a:2:5,'; ',b:2:5,']');
-    write('Expected: 24... ');
+    writeln('Testing calculate integral functions 5*x^4-3*x^2 on [',a:2:5,'; ',b:2:5,']');
     I1:=integral(@f_test6,a,b,eps2);
-    writeln('Got: ',I1:2:5);
+    writeln('Got:                       ',I1:2:5);
+    writeln('Expected:                  24');
     if(abs(24-I1)<eps2) then
       checked:='[OK]'
     else checked:='[FAILED]';
