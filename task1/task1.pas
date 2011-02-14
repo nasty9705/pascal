@@ -93,7 +93,7 @@ begin
 
       if (f_middle = 0) then begin
         x := middle;
-	break_flag := True;
+        break_flag := True;
       end else begin
         fm_z := (f_middle > 0);
    
