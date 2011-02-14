@@ -1,4 +1,4 @@
-{Turenko Alexander. #5.28}
+{Author: Alexander Turenko} {#5.28}
 program n528;
 const n = 70;
 var s:integer;

@@ -1,3 +1,4 @@
+{Author: Alexander Turenko}
 program n634(INPUT, OUTPUT);
 var current, sum:integer;
 	is_plus:boolean;

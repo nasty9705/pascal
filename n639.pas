@@ -1,4 +1,4 @@
-{Turenko Alexander. #6.39}
+{Author: Alexander Turenko} {#6.39}
 program n639(OUTPUT);
 const startx = -1;
       endx = 2;

@@ -1,4 +1,4 @@
-{Turenko Alexander. #5.54}
+{Author: Alexander Turenko} {#5.54}
 program n554(INPUT, OUTPUT);
 var    i,j,n:integer;
     isSimple:boolean;

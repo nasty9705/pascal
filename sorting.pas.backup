@@ -1,3 +1,4 @@
+{Author: Alexander Turenko}
 program sorting;
 const start_year=1930; {1930-2029}
       max_index_of_sequence=99;

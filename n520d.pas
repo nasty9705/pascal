@@ -1,4 +1,4 @@
-{Turenko Alexander. #5.20d}
+{Author: Alexander Turenko} {#5.20d}
 program n520d(INPUT, OUTPUT);
 var         n:integer;
     x,eps,k,z:real;

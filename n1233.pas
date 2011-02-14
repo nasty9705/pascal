@@ -1,4 +1,4 @@
-{Turenko Alexander, #12.33}
+{Author: Alexander Turenko} {#12.33}
 program n1233(INPUT, OUTPUT);
 const n=10;
 type stack = array [0..n] of integer;

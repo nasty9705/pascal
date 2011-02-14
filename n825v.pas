@@ -1,4 +1,4 @@
-{Turenko Alexander. #8.25v}
+{Author: Alexander Turenko} {#8.25v}
 program n825v(INPUT, OUTPUT);
 var       c:char;
           x:array [0..9] of integer;

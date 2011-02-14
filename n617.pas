@@ -1,4 +1,4 @@
-{Turenko Alexander. #6.17}
+{Author: Alexander Turenko} {#6.17}
 program n617(INPUT, OUTPUT);
 var n:integer;
     c:char;

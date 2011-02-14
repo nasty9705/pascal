@@ -1,4 +1,4 @@
-{Turenko Alexander. #5.21v}
+{Author: Alexander Turenko} {#5.21v}
 program n521v;
 var n1,n2,s:integer;
 begin

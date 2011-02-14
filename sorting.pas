@@ -1,4 +1,4 @@
-{Turenko Alexander, Project 3, 5.7}
+{Author: Alexander Turenko} {Project 3, 5.7}
 program sorting;
 uses crt;
 const start_year=1930; {1930-2029}

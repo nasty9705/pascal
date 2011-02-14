@@ -1,4 +1,4 @@
-{Turenko Alexander. #18.11}
+{Author: Alexander Turenko} {#18.11}
 program n1811(INPUT, OUTPUT);
 var st,delta,n,deltaf:integer;
                     c:char;

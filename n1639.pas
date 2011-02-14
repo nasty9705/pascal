@@ -1,4 +1,4 @@
-{Author: Turenko Alexander}
+{Author: Alexander Turenko} {#16.39}
 program n1639(INPUT, OUTPUT);
 type str  = packed array [1..10] of char;
      sex_type = (M,W);

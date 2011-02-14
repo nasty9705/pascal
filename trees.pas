@@ -1,4 +1,4 @@
-{Author: Turenko Alexander}
+{Author: Alexander Turenko}
 program trees(INPUT, OUTPUT);
 type tree_type = integer;
      tree = ^item;

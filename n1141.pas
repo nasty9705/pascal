@@ -1,4 +1,4 @@
-{Turenko Alexander. #11.41}
+{Author: Alexander Turenko} {#11.41}
 program n1141(OUTPUT);
 var it:integer;
     bt:boolean;

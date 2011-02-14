@@ -1,4 +1,4 @@
-{Turenko Alexander. #8.41g}
+{Author: Alexander Turenko} {#8.41g}
 program n841g(INPUT, OUTPUT);
 const
   n=10{100};

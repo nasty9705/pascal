@@ -1,4 +1,4 @@
-{Turenko Alexander, #12.18}
+{Author: Alexander Turenko} {#12.18}
 program n1218(INPUT, OUTPUT);
 var a, b:integer;
 

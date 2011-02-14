@@ -1,3 +1,4 @@
+{Author: Alexander Turenko} {#8.27}
 program n827(INPUT, OUTPUT);
 const n=80;
 var i,j:integer;

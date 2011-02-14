@@ -1,4 +1,4 @@
-{Turenko Alexander, #13.32a}
+{Author: Alexander Turenko} {#13.32a}
 program n1332a(INPUT, OUTPUT);
 type complex = record r,z:real end;
 var k,mn,res1,res2:complex;

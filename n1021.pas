@@ -1,4 +1,4 @@
-{Turenko Alexander, #10.21}
+{Author: Alexander Turenko} {#10.21}
 program n1021(INPUT, OUTPUT);
 var  board:packed array [0..7,0..7] of char;
        x,y:integer;

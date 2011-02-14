@@ -1,4 +1,4 @@
-{Turenko Alexander, #10.12b}
+{Author: Alexander Turenko} {#10.12b}
 program n1012b(INPUT, OUTPUT);
 var letters:packed array [1..33] of char;
       c1,c2:char;

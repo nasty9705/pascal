@@ -1,4 +1,4 @@
-{Turenko Alexander. #8.60}
+{Author: Alexander Turenko} {#8.60}
 program n860(OUTPUT);
 var i,s,sn,n:longint;
 begin

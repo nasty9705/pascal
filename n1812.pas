@@ -1,4 +1,4 @@
-{Turenko Alexander, #18.12}
+{Author: Alexander Turenko} {#18.12}
 program n1812(INPUT,OUTPUT);
 var cur,i,n,sum:integer;
               c:char;

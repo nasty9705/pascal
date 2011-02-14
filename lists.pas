@@ -1,4 +1,4 @@
-{Author: Turenko Alexander}
+{Author: Alexander Turenko}
 program lists(INPUT, OUTPUT);
 type list_type = integer; {Тип элементов списка}
      list = ^item;

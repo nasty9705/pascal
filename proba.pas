@@ -1,3 +1,4 @@
+{Author: Alexander Turenko}
 program proba;
 
 procedure write_spaces(k,n:integer);

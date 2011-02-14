@@ -1,4 +1,4 @@
-{Turenko Alexander, Project 1, 7.4.3 and 7.1.3}
+{Author: Alexander Turenko} {Project 1, 7.4.3 and 7.1.3}
 program task1(INPUT, OUTPUT);
 const eps = 0.001;
       p = 1/15;

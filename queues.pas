@@ -1,4 +1,4 @@
-{Author: Turenko Alexander}
+{Author: Alexander Turenko}
 program queues(INPUT, OUTPUT);
 type queue_type = integer; {Тип элементов очереди}
      queue = ^item;

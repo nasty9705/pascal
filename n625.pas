@@ -1,4 +1,4 @@
-{Turenko Alexander. #6.25}
+{Author: Alexander Turenko} {#6.25}
 program n625(INPUT, OUTPUT);
 var c:char;
 begin
