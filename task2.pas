@@ -1,4 +1,4 @@
-{Author: Alexander Turenko}
+{Author: Alexander Turenko} {Project 2, 19-22}
 program task2(INPUT, OUTPUT);
 type formula_form_t = (normal, prefix, postfix);
      relation_t = (norel, plus, minus, mult);
