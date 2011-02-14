@@ -1,5 +1,5 @@
 {Turenko Alexander, Project 1, 7.4.3 and 7.1.3}
-program p743(INPUT, OUTPUT);
+program task1(INPUT, OUTPUT);
 const eps = 0.001;
       p = 1/15;
 type RF = function (x:real):real;
