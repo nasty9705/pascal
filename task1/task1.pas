@@ -70,6 +70,7 @@ end;
 procedure root1(f,g,f1,g1:RF; a,b,eps:real; var x:real);
 var fa,fb,middle,f_middle,eps_current:real;
     fa_z,fb_z,fm_z:boolean;
+    break_flag:boolean;
 begin
   if (debug) then writeln('DEBUG: Called root1(',a:2:5,'; ',b:2:5,');');
 
@@ -78,45 +79,45 @@ begin
 
   if (fa = 0) then begin
     x := a;
-    exit;
   end else if (fb = 0) then begin
     x := b;
-    exit;
-  end;
+  end else begin
+    fa_z := (fa > 0);
+    fb_z := (fb > 0);
 
-  fa_z := (fa > 0);
-  fb_z := (fb > 0);
+    break_flag := False;
 
-  repeat
-    middle := (a + b) / 2;
-    f_middle := Fd(f,g,middle);
+    repeat
+      middle := (a + b) / 2;
+      f_middle := Fd(f,g,middle);
 
-    if (f_middle = 0) then begin
-      x := middle;
-      exit;
-    end;
-
-    fm_z := (f_middle > 0);
+      if (f_middle = 0) then begin
+        x := middle;
+	break_flag := True;
+      end else begin
+        fm_z := (f_middle > 0);
    
-    if (fa_z <> fm_z) then begin
-      if (debug) then writeln('DEBUG: middle<--b');
-      b := middle;
-      fb := f_middle;
-      fb_z := fm_z;
-    end else if (fm_z <> fb_z) then begin
-      if (debug) then writeln('DEBUG: a-->middle');
-      a := middle;
-      fa := f_middle;
-      fa_z := fm_z;
-    end else begin
-      writeln('root1: solve not found.');
-      exit;
-    end;
+        if (fa_z <> fm_z) then begin
+          if (debug) then writeln('DEBUG: middle<--b');
+          b := middle;
+          fb := f_middle;
+          fb_z := fm_z;
+        end else if (fm_z <> fb_z) then begin
+          if (debug) then writeln('DEBUG: a-->middle');
+          a := middle;
+          fa := f_middle;
+          fa_z := fm_z;
+        end else begin
+          writeln('root1: solve not found.');
+	  break_flag := True;
+        end;
 
-    eps_current := b - a;
-  until (eps_current <= eps);
+        eps_current := b - a;
+      end;
+    until (break_flag OR (eps_current <= eps));
 
-  x := a;
+    x := a;
+  end;
 end;
 
 procedure root(f,g,f1,g1:RF; a,b,eps:real; var x:real);
@@ -206,106 +207,113 @@ begin
   writeln('4. Secant and tangent method.');
   write('> '); read(tmp);
 
-  if ((tmp = 1) OR (tmp = 4)) then begin
-    root_method := tmp;
-  end else begin
+  if (NOT ((tmp = 1) OR (tmp = 4))) then begin
     writeln('Sorry, this method is not implemented.');
     writeln('Exiting...');
-    init := False; { Not initialized }
-    exit;
+
+    { Not initialized }
+    init := False;
+  end else begin
+    root_method := tmp;
+
+    eps1 := eps;
+    eps2 := eps;
+
+    if (debug) then writeln('DEBUG: eps1 = eps2 = eps.');
+
+    writeln;
+
+    { Succeful initialized }
+    init := True;
   end;
-
-  eps1 := eps;
-  eps2 := eps;
-
-  if (debug) then writeln('DEBUG: eps1 = eps2 = eps.');
-
-  { Succeful initialized }
-  init := True;
 end;
 
 begin
-  if (NOT init) then
-    exit;
-  writeln;
+  if (init()) then begin
+    if (NOT test) then begin
+      a:=2.1; b:=7;
+      root(@f1,@f2,@f1p,@f2p,a,b,eps1,x1);
+      root(@f2,@f3,@f2p,@f3p,a,b,eps1,x2);
+      root(@f1,@f3,@f1p,@f3p,a,b,eps1,x3);
+      writeln('x_12: ',x1:2:5);
+      writeln('x_23: ',x2:2:5);
+      writeln('x_13: ',x3:2:5);
 
-  if (NOT test) then begin
-    a:=2.1; b:=7;
-    root(@f1,@f2,@f1p,@f2p,a,b,eps1,x1);
-    root(@f2,@f3,@f2p,@f3p,a,b,eps1,x2);
-    root(@f1,@f3,@f1p,@f3p,a,b,eps1,x3);
-    writeln('x_12: ',x1:2:5);
-    writeln('x_23: ',x2:2:5);
-    writeln('x_13: ',x3:2:5);
+      I1:=integral(@f1,x1,x3,eps2);
+      I2:=integral(@f2,x1,x2,eps2);
+      I3:=integral(@f3,x2,x3,eps2);
+      writeln('Integral f1 (',x1:2:5,'; ',x3:2:5,') : ', I1:2:5);
+      writeln('Integral f2 (',x1:2:5,'; ',x2:2:5,') : ', I2:2:5);
+      writeln('Integral f3 (',x2:2:5,'; ',x3:2:5,') : ', I3:2:5);
 
-    I1:=integral(@f1,x1,x3,eps2);
-    I2:=integral(@f2,x1,x2,eps2);
-    I3:=integral(@f3,x2,x3,eps2);
-    writeln('Integral f1 (',x1:2:5,'; ',x3:2:5,') : ', I1:2:5);
-    writeln('Integral f2 (',x1:2:5,'; ',x2:2:5,') : ', I2:2:5);
-    writeln('Integral f3 (',x2:2:5,'; ',x3:2:5,') : ', I3:2:5);
+      writeln('Area: ', (I2+I3-I1):2:5);
+    end else begin
+      a:=0.5; b:=10;
+      writeln('Testing find point of cross of functions 1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
+      root(@f_test,@f_test1,@fp_test,@fp_test1,a,b,eps1,x1);
+      writeln('Got:                       ',x1:2:5);
+      writeln('Expected:                  0.814333');
+      if (abs(0.814333-x1)<eps1) then
+        checked:='[OK]'
+      else
+        checked:='[FAILED]';
+      writeln('Checking with eps ',eps1:2:5,': ',checked);
+      writeln;
 
-    writeln('Area: ', (I2+I3-I1):2:5);
-  end else begin
-    a:=0.5; b:=10;
-    writeln('Testing find point of cross of functions 1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    root(@f_test,@f_test1,@fp_test,@fp_test1,a,b,eps1,x1);
-    writeln('Got:                       ',x1:2:5);
-    writeln('Expected:                  0.814333');
-    if(abs(0.814333-x1)<eps1) then
-      checked:='[OK]'
-    else checked:='[FAILED]';
-    writeln('Checking with eps ',eps1:2:5,': ',checked);
-    writeln;
+      writeln('Testing find point of cross of functions -1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
+      root(@f_test,@f_test2,@fp_test,@fp_test2,a,b,eps1,x1);
+      writeln('Got:                       ',x1:2:5);
+      writeln('Expected:                  1');
+      if (abs(1-x1)<eps1) then
+        checked:='[OK]'
+      else
+        checked:='[FAILED]';
+      writeln('Checking with eps ',eps1:2:5,': ',checked);
+      writeln;
 
-    writeln('Testing find point of cross of functions -1/x+1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    root(@f_test,@f_test2,@fp_test,@fp_test2,a,b,eps1,x1);
-    writeln('Got:                       ',x1:2:5);
-    writeln('Expected:                  1');
-    if(abs(1-x1)<eps1) then
-      checked:='[OK]'
-    else checked:='[FAILED]';
-    writeln('Checking with eps ',eps1:2:5,': ',checked);
-    writeln;
+      writeln('Testing find point of cross of functions 1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
+      root(@f_test,@f_test3,@fp_test,@fp_test3,a,b,eps1,x1);
+      writeln('Got:                       ',x1:2:5);
+      writeln('Expected:                  1');
+      if (abs(1-x1)<eps1) then
+        checked:='[OK]'
+      else
+        checked:='[FAILED]';
+      writeln('Checking with eps ',eps1:2:5,': ',checked);
+      writeln;
 
-    writeln('Testing find point of cross of functions 1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    root(@f_test,@f_test3,@fp_test,@fp_test3,a,b,eps1,x1);
-    writeln('Got:                       ',x1:2:5);
-    writeln('Expected:                  1');
-    if(abs(1-x1)<eps1) then
-      checked:='[OK]'
-    else checked:='[FAILED]';
-    writeln('Checking with eps ',eps1:2:5,': ',checked);
-    writeln;
+      writeln('Testing find point of cross of functions -1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
+      root(@f_test,@f_test4,@fp_test,@fp_test4,a,b,eps1,x1);
+      writeln('Got:                       ',x1:2:5);
+      writeln('Expected:                  1.15545');
+      if (abs(1.15545-x1)<eps1) then
+        checked:='[OK]'
+      else
+        checked:='[FAILED]';
+      writeln('Checking with eps ',eps1:2:5,': ',checked);
+      writeln;
 
-    writeln('Testing find point of cross of functions -1/x-1 and -12x+12 on [',a:2:5,'; ',b:2:5,']');
-    root(@f_test,@f_test4,@fp_test,@fp_test4,a,b,eps1,x1);
-    writeln('Got:                       ',x1:2:5);
-    writeln('Expected:                  1.15545');
-    if(abs(1.15545-x1)<eps1) then
-      checked:='[OK]'
-    else checked:='[FAILED]';
-    writeln('Checking with eps ',eps1:2:5,': ',checked);
-    writeln;
+      a:=1; b:=2;
+      writeln('Testing calculate integral functions 7*x^6+14 on [',a:2:5,'; ',b:2:5,']');
+      I1:=integral(@f_test5,a,b,eps2);
+      writeln('Got:                       ',I1:2:5);
+      writeln('Expected:                  141');
+      if (abs(141-I1)<eps2) then
+        checked:='[OK]'
+      else
+        checked:='[FAILED]';
+      writeln('Checking with eps ',eps1:2:5,': ',checked);
+      writeln;
 
-    a:=1; b:=2;
-    writeln('Testing calculate integral functions 7*x^6+14 on [',a:2:5,'; ',b:2:5,']');
-    I1:=integral(@f_test5,a,b,eps2);
-    writeln('Got:                       ',I1:2:5);
-    writeln('Expected:                  141');
-    if(abs(141-I1)<eps2) then
-      checked:='[OK]'
-    else checked:='[FAILED]';
-    writeln('Checking with eps ',eps1:2:5,': ',checked);
-    writeln;
-
-    writeln('Testing calculate integral functions 5*x^4-3*x^2 on [',a:2:5,'; ',b:2:5,']');
-    I1:=integral(@f_test6,a,b,eps2);
-    writeln('Got:                       ',I1:2:5);
-    writeln('Expected:                  24');
-    if(abs(24-I1)<eps2) then
-      checked:='[OK]'
-    else checked:='[FAILED]';
-    writeln('Checking with eps ',eps1:2:5,': ',checked);
+      writeln('Testing calculate integral functions 5*x^4-3*x^2 on [',a:2:5,'; ',b:2:5,']');
+      I1:=integral(@f_test6,a,b,eps2);
+      writeln('Got:                       ',I1:2:5);
+      writeln('Expected:                  24');
+      if (abs(24-I1)<eps2) then
+        checked:='[OK]'
+      else
+        checked:='[FAILED]';
+      writeln('Checking with eps ',eps1:2:5,': ',checked);
+    end;
   end;
 end.
