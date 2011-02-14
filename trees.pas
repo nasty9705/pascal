@@ -11,12 +11,12 @@ var t1:tree;
 
 procedure init(var t1:tree);
 begin
-  t1:=nil;
+  t1 := nil;
 end;
 
 function isEmpty(t:tree):boolean;
 begin
-  isEmpty:=(t=nil);
+  isEmpty := (t = nil);
 end;
 
 function newItem(e:tree_type):tree;
@@ -57,15 +57,15 @@ begin
 end;
 
 begin
-add(t1,1);
-add(t1,2);
-add(t1,7);
-add(t1,11);
-add(t1,13);
-add(t1,14);
-add(t1,56);
-add(t1,12);
-add(t1,34);
-add(t1,3);
+add(t1, 1);
+add(t1, 2);
+add(t1, 7);
+add(t1, 11);
+add(t1, 13);
+add(t1, 14);
+add(t1, 56);
+add(t1, 12);
+add(t1, 34);
+add(t1, 3);
 show(t1);
 end.
