@@ -57,6 +57,7 @@ begin
 end;
 
 begin
+init(t1);
 add(t1, 1);
 add(t1, 2);
 add(t1, 7);
