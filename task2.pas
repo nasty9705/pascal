@@ -90,6 +90,16 @@ begin
   isDigit := ((c >= '0') AND (c <= '9'));
 end;
 
+procedure destroy(var t:tree_t);
+begin
+  if (t <> nil) then begin
+    destroy(t^.left);
+    destroy(t^.right);
+    dispose(t);
+    t := nil;
+  end;
+end;
+
 procedure parseRelation(var r:relation_t; var succesful:boolean);
 var c:char;
     my_succesful:boolean;
@@ -156,17 +166,10 @@ begin
   else
     my_succesful := False;
 
-  succesful := my_succesful;
-end;
+  if (NOT my_succesful) then
+    destroy(t);
 
-procedure destroy(var t:tree_t);
-begin
-  if (t <> nil) then begin
-    destroy(t^.left);
-    destroy(t^.right);
-    dispose(t);
-    t := nil;
-  end;
+  succesful := my_succesful;
 end;
 
 procedure calc(t:tree_t; x:integer; var res:integer);
