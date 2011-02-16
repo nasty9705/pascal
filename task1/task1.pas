@@ -168,7 +168,7 @@ begin
 
     n:=n+1;
   until (abs(Il2n-Iln)<p*eps);
-  writeln('Integral end before ',n,' iteration of devide.');
+  writeln('Integral end before ',n,' iteration of divide.');
   integral:=Il2n;
 end;
 
