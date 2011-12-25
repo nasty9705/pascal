@@ -27,7 +27,7 @@ function fp_test2(x:real):real;
 function fp_test3(x:real):real;
 function fp_test4(x:real):real;
 
-1.3. Функции для проверки правильноти нахождения определённого интеграла. Возвращается значение функции в точке x.
+1.3. Функции для проверки правильности нахождения определённого интеграла. Возвращается значение функции в точке x.
 function f_test5(x:real):real;
 function f_test6(x:real):real;
 
